@@ -34,8 +34,16 @@ export default function ProductDetail() {
           {product?.description}
         </Typography>
         <Typography variant="h6">{product?.price}</Typography>
-        <Box sx={{display:'flex',justifyContent:"flex-end",mr:5,mt:5}}>
-          <Button onClick={()=>{ disptach(addToCart(product)) }} variant="contained">Add To Cart</Button>
+        <Box sx={{ display: "flex", justifyContent: "flex-end", mr: 5, mt: 5 }}>
+          <Button
+            onClick={() => {
+              disptach(addToCart({ ...product, quantity: 1 }));
+              router.push("/");
+            }}
+            variant="contained"
+          >
+            Add To Cart
+          </Button>
         </Box>
       </Box>
     </Box>

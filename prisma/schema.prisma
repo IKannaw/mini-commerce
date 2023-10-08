@@ -22,7 +22,7 @@ model Product {
 
 model Order {
   id         Int     @id @default(autoincrement())
-  status     Boolean
+  status     String
   totalPrice Int
   OrderLine OrderLine[]
 }
@@ -37,7 +37,7 @@ model OrderLine {
   isArchived Boolean @default(false)
 }
 
-enum OrderStatus {
+ enum OrderStatus {
   ORDERED
   OUTFORDELIVERY
   DELIVERED

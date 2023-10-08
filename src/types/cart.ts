@@ -1,6 +1,6 @@
 import { Product } from "@prisma/client";
 
-interface CartItem extends Product {
+export interface CartItem extends Product {
   quantity: number;
 }
 
@@ -11,3 +11,10 @@ interface CartSlice {
 }
 
 export default CartSlice;
+
+export enum OrderStatus {
+  ORDERED,
+  OUTFORDELIVERY,
+  DELIVERED,
+  CANCLEDt
+}
