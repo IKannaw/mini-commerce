@@ -3,12 +3,19 @@ import { Box, Button, Typography } from "@mui/material";
 import AddCircleIcon from "@mui/icons-material/AddCircle";
 import RemoveCircleIcon from "@mui/icons-material/RemoveCircle";
 import React from "react";
-import { orderConfirm, updateQuantity } from "@/store/slices/cartSlice";
+import {
+  addToCart,
+  createOrder,
+  reset,
+  updateQuantity,
+} from "@/store/slices/cartSlice";
+import { useRouter } from "next/router";
 
 export default function index() {
   const cartProducts = useAppSelector((store) => store.carts.items);
   const dispatch = useAppDispatch();
   let subtotal = 0;
+  const router = useRouter();
 
   const increaseQuantity = (id: number, quantity: number) => {
     dispatch(updateQuantity({ id, quantity }));
@@ -19,18 +26,26 @@ export default function index() {
   };
 
   const getSubTotal = () => {
-    cartProducts.forEach(product =>{
+    cartProducts.forEach((product) => {
       subtotal += product.quantity * product.price;
-    })
+    });
     return subtotal;
   };
 
-  const handleConfirmOrder =()=>{
-    dispatch(orderConfirm(cartProducts));
-  }
+  const onSuccess = (data: any) => {
+    router.push(`/order-details?orderId=${data.orderId}&status=${data.status}`);
+    dispatch(reset());
+  };
+
+  const onError = (data: any) => {};
+
+  const handleCreateOrder = async () => {
+    dispatch(createOrder({ payload: cartProducts, onSuccess, onError }));
+  };
 
   return (
     <Box sx={{ maxWidth: 1000, Height: 800, margin: "0 auto", p: 3 }}>
+      <Box></Box>
       {cartProducts.length > 0 ? (
         <Box>
           {cartProducts.map((product) => (
@@ -100,7 +115,9 @@ export default function index() {
             <Typography>{getSubTotal()}</Typography>
           </Box>
           <Box sx={{ display: "flex", justifyContent: "flex-end" }}>
-            <Button variant="contained" onClick={handleConfirmOrder}>Confirm Order</Button>
+            <Button variant="contained" onClick={handleCreateOrder}>
+              Confirm Order
+            </Button>
           </Box>
         </Box>
       ) : (

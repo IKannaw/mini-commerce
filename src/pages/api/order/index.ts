@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import CartSlice, { CartItem, OrderStatus } from "@/types/cart";
+import CartSlice, { CartItem } from "@/types/cart";
 import { prisma } from "@/utils/db";
-import { Product } from "@prisma/client";
+import { OrderStatus, Product } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(
@@ -28,10 +28,16 @@ export default async function handler(
       const price = getTotalPrice(item);
       subTotalPrice += price;
     });
-    const order = await prisma.order.create({data:{status:"ORDERED",totalPrice:subTotalPrice}});
-     cartItems.forEach(async(item) =>{
-        await  prisma.orderLine.create({data:{orderId:order.id,productId:item.id,quantity:item.quantity}});
-     })
+    const order = await prisma.order.create({
+      data: { status: OrderStatus.ORDERED, totalPrice: subTotalPrice },
+    });
+    const orderId = order.id;
+    cartItems.forEach(async (item) => {
+      await prisma.orderLine.create({
+        data: { orderId, productId: item.id, quantity: item.quantity },
+      });
+    });
+    return res.status(200).json({ orderId, status: OrderStatus.ORDERED });
   }
-  res.status(200).json({ name: "John Doe" });
+  return res.status(200).json({ name: "John Doe" });
 }
